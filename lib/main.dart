@@ -30,6 +30,7 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   late Box _notesBox;
+  //빈 리스트 추가
   List<dynamic> _list = [];
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
   Future<void> _initializeHive() async {
     _notesBox = Hive.box('notes');
     setState(() {
+      //리스트 초기화
       _list = _notesBox.values.toList();
     });
   }
@@ -51,6 +53,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
   Future<void> _fetchNotes() async {
     setState(() {
+      //리스트 초기화
       _list = _notesBox.values.toList();
     });
   }
@@ -70,6 +73,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
           return ListView.builder(
             itemCount: _notesBox.length,
             itemBuilder: (context, index) {
+              //note 값 리스트로 변경
               final note = _list[index];
               return ListTile(
                 title: Text(note['title']),
@@ -112,8 +116,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
                 onChanged: (value) {
                   content = value;
                 },
-                decoration:
-                    const InputDecoration(hintText: 'Enter note content'),
+                decoration: const InputDecoration(hintText: 'Enter note content'),
               ),
             ],
           ),
@@ -127,8 +130,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
             TextButton(
               child: const Text('Add'),
               onPressed: () {
-                Navigator.of(context)
-                    .pop({'title': title!, 'content': content!});
+                Navigator.of(context).pop({'title': title!, 'content': content!});
               },
             ),
           ],
