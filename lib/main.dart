@@ -30,7 +30,6 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   late Box _notesBox;
-  List<dynamic> _list = [];
   @override
   void initState() {
     super.initState();
@@ -38,28 +37,25 @@ class _NoteListScreenState extends State<NoteListScreen> {
   }
 
   Future<void> _initializeHive() async {
-    _notesBox = Hive.box('notes');
-    setState(() {
-      _list = _notesBox.values.toList();
-    });
+    _notesBox = await Hive.openBox('notes');
+    setState(() {}); 
   }
 
   Future<void> _addNote(String title, String content) async {
     await _notesBox.add({'title': title, 'content': content});
-    _fetchNotes();
+    setState(() {}); 
   }
 
   Future<void> _fetchNotes() async {
-    setState(() {
-      _list = _notesBox.values.toList();
-    });
+    //로컬 스토리지에서 데이터 겟
+    _notesBox = await _notesBox.get('notes');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: Text('Notes'),
       ),
       body: FutureBuilder(
         future: _fetchNotes(),
@@ -70,7 +66,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
           return ListView.builder(
             itemCount: _notesBox.length,
             itemBuilder: (context, index) {
-              final note = _list[index];
+              final note = _notesBox.getAt(index);
               return ListTile(
                 title: Text(note['title']),
                 subtitle: Text(note['content']),
