@@ -30,7 +30,8 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   late Box _notesBox;
-  List<dynamic> _list = [];
+  String _noteName = 'No noteName';
+
   @override
   void initState() {
     super.initState();
@@ -39,9 +40,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
   Future<void> _initializeHive() async {
     _notesBox = Hive.box('notes');
-    setState(() {
-      _list = _notesBox.values.toList();
-    });
+    _fetchNotes();
   }
 
   Future<void> _addNote(String title, String content) async {
@@ -49,9 +48,15 @@ class _NoteListScreenState extends State<NoteListScreen> {
     _fetchNotes();
   }
 
+  Future<void> _deleteNote(int index) async {
+    await _notesBox.deleteAt(index);
+    _fetchNotes();
+  }
+
   Future<void> _fetchNotes() async {
     setState(() {
-      _list = _notesBox.values.toList();
+      _noteName =
+          _notesBox.get('title', defaultValue: 'No noteName') ?? 'No noteName';
     });
   }
 
@@ -59,7 +64,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: Text('Notes'),
       ),
       body: FutureBuilder(
         future: _fetchNotes(),
@@ -70,10 +75,19 @@ class _NoteListScreenState extends State<NoteListScreen> {
           return ListView.builder(
             itemCount: _notesBox.length,
             itemBuilder: (context, index) {
-              final note = _list[index];
+              final note = _notesBox.getAt(index);
               return ListTile(
                 title: Text(note['title']),
                 subtitle: Text(note['content']),
+                trailing: IconButton(
+                    onPressed: () async {
+                      bool? confirmDelete =
+                          await _showDeleteConfirmationDialog(context);
+                      if (confirmDelete == true) {
+                        _deleteNote(index); // 삭제 메소드 호출
+                      }
+                    },
+                    icon: const Icon(Icons.delete)),
               );
             },
           );
@@ -129,6 +143,32 @@ class _NoteListScreenState extends State<NoteListScreen> {
               onPressed: () {
                 Navigator.of(context)
                     .pop({'title': title!, 'content': content!});
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Note'),
+          content: const Text('Are you sure you want to delete this note?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
               },
             ),
           ],
