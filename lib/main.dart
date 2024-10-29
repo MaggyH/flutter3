@@ -40,17 +40,20 @@ class _NoteListScreenState extends State<NoteListScreen> {
   Future<void> _initializeHive() async {
     _notesBox = Hive.box('notes');
     setState(() {
+      //list추가
       _list = _notesBox.values.toList();
     });
   }
 
   Future<void> _addNote(String title, String content) async {
     await _notesBox.add({'title': title, 'content': content});
+    //피치노트스 추가
     _fetchNotes();
   }
 
   Future<void> _fetchNotes() async {
     setState(() {
+      //리스트 추가
       _list = _notesBox.values.toList();
     });
   }
@@ -70,6 +73,8 @@ class _NoteListScreenState extends State<NoteListScreen> {
           return ListView.builder(
             itemCount: _notesBox.length,
             itemBuilder: (context, index) {
+              //리스트로 변경
+              //이전코드 final note = _notesBox.getAt(index);
               final note = _list[index];
               return ListTile(
                 title: Text(note['title']),
