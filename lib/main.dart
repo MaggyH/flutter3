@@ -30,8 +30,6 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   late Box _notesBox;
-  //빈 리스트 추가
-  List<dynamic> _list = [];
   @override
   void initState() {
     super.initState();
@@ -40,10 +38,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
   Future<void> _initializeHive() async {
     _notesBox = Hive.box('notes');
-    setState(() {
-      //리스트 초기화
-      _list = _notesBox.values.toList();
-    });
+    setState(() {});
   }
 
   Future<void> _addNote(String title, String content) async {
@@ -52,10 +47,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
   }
 
   Future<void> _fetchNotes() async {
-    setState(() {
-      //리스트 초기화
-      _list = _notesBox.values.toList();
-    });
+    setState(() {});
   }
 
   @override
@@ -73,8 +65,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
           return ListView.builder(
             itemCount: _notesBox.length,
             itemBuilder: (context, index) {
-              //note 값 리스트로 변경
-              final note = _list[index];
+              final note = _notesBox.getAt(index);
               return ListTile(
                 title: Text(note['title']),
                 subtitle: Text(note['content']),
