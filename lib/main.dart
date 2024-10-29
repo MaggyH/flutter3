@@ -38,18 +38,19 @@ class _NoteListScreenState extends State<NoteListScreen> {
   }
 
   Future<void> _initializeHive() async {
+    // Hive에서 Box를 가져온 후 Box에서 fetch
     _notesBox = Hive.box('notes');
-    setState(() {
-      _list = _notesBox.values.toList();
-    });
+    _fetchNotes();
   }
 
   Future<void> _addNote(String title, String content) async {
+    // Box에 노트를 추가한 후 Box에서 fetch
     await _notesBox.add({'title': title, 'content': content});
     _fetchNotes();
   }
 
   Future<void> _fetchNotes() async {
+    // notesBox에서 값을 가져와 _list에 할당하고 setState()로 상태 변화를 알림
     setState(() {
       _list = _notesBox.values.toList();
     });
