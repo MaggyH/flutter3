@@ -44,6 +44,7 @@ class NoteListScreen extends StatefulWidget {
 class _NoteListScreenState extends State<NoteListScreen> {
   // Hive Box를 저장할 변수 선언
   late Box _notesBox;
+
   
   // 노트를 저장할 빈 리스트 초기화
   List<dynamic> _list = [];
@@ -59,6 +60,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
   Future<void> _initializeHive() async {
     // 'notes'라는 이름의 Hive 박스를 가져옵니다.
     _notesBox = Hive.box('notes');
+    setState(() {});
     
     // 현재 Hive 박스에 저장된 데이터를 _list에 할당하여 화면에 표시
     _fetchNotes();
@@ -68,6 +70,8 @@ class _NoteListScreenState extends State<NoteListScreen> {
   Future<void> _addNote(String title, String content) async {
     // title과 content가 포함된 노트를 Hive 박스에 추가
     await _notesBox.add({'title': title, 'content': content});
+
+    setState(() {}); // 리스트 초기화
     
     // 노트 추가 후 목록을 다시 불러와 화면을 갱신
     _fetchNotes();
@@ -75,6 +79,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
   // Hive 박스에서 데이터를 가져와 _list에 할당하는 함수
   Future<void> _fetchNotes() async {
+    setState(() {});
     setState(() {
       // Hive 박스에 저장된 모든 데이터를 리스트로 변환하여 _list에 저장
       _list = _notesBox.values.toList();
@@ -102,6 +107,9 @@ class _NoteListScreenState extends State<NoteListScreen> {
             // 노트의 개수를 itemCount에 설정하여 리스트 길이 지정
             itemCount: _notesBox.length,
             itemBuilder: (context, index) {
+
+              final note = _notesBox.getAt(index);
+
               // _list에서 index에 해당하는 노트를 가져옵니다.
               final note = _list[index];
               return ListTile(
